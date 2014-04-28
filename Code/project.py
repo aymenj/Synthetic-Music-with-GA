@@ -14,23 +14,7 @@ import melody
 
 import matplotlib.pyplot as plt
 
-
-# MAJOR, MINOR, RELEASE, STATUS [alpha, beta, final], VERSION
-VERSION = (0, 0, 0, 'alpha', 0)
-
-
-def get_version():
-    """
-    Returns a string version of VERSION
-    """
-    return '.'.join([str(i) for i in VERSION])
-
-
 parser = argparse.ArgumentParser(description='Evolves valid solutions to species counterpoint problems.')
-
-parser.add_argument('--version', action='version', version=get_version())
-
-parser.add_argument('-v', '--verbose', help='increased amount of verbosity', action='store_true')
 
 parser.add_argument('-cf', '--cantus-firmus', help='specify the cantus firmus', nargs='*', required=True)
 
@@ -72,7 +56,7 @@ if __name__ == '__main__':
         print fitness
 
     plt.plot(fitnesses)
-    plt.show()
+    plt.savefig('output/fitness_%s.png' % output)
     
     with open('output/%s.ly' % output, 'w') as output:
         output.write(lilypond.render(4, cf, generation[0].chromosome))
