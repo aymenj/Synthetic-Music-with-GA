@@ -74,5 +74,5 @@ if __name__ == '__main__':
     plt.plot(fitnesses)
     plt.show()
     
-    with open('%s.ly' % output, 'w') as output:
+    with open('output/%s.ly' % output, 'w') as output:
         output.write(lilypond.render(4, cf, generation[0].chromosome))
