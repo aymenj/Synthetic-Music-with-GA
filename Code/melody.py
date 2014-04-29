@@ -2,9 +2,6 @@ import random
 import gen_alg
 
 # Some defaults.
-DEFAULT_MAX_GENERATION = 100
-
-
 VALID_INTERVALS = [2, 4, 5, 7, 9, 11] # Intervals between notes that are allowed (fourth sepcies counterpoint)
 
 CONSONANCES, DISSONANCES = [2, 4, 5, 7, 9, 11], [3, 6, 8, 10] # Intervals between notes that are allowed (third species counterpoint)
@@ -281,7 +278,7 @@ def make_halter(cantus_firmus):
 
         max_reward = 5.0
         return (population[0].fitness >= max_reward + suspensions or
-            generation_count > DEFAULT_MAX_GENERATION)
+            generation_count > 100)
 
     return halter
 
