@@ -15,31 +15,6 @@ VALID_FIRST_BEAT_INTERVALS, VALID_THIRD_BEAT_INTERVALS = CONSONANCES, CONSONANCE
 
 
 # Various rewards and punishments used with different aspects of the solution.
-REWARD_FIRST, PUNISH_FIRST = 1, 0.1 # Reward / punishment to ensure the solution starts correctly (5th or 8ve).
-
-REWARD_LAST, PUNISH_LAST = 1, 0.1 # Reward / punishment to ensure the solution finishes correctly (at an 8ve).
-
-REWARD_LAST_STEP, PUNISH_LAST_STEP = 1, 0.7 # Reward / punishment to ensure the penultimate note is step wise onto the final note.
-
-REWARD_LAST_MOTION, PUNISH_LAST_MOTION = 1, 0.1 # Reward / punish contrary motion onto the final note.
-
-PUNISH_REPEATED_PENULTIMATE = 0.1 # Punishment if the penultimate note is a repeated note.
-
-REWARD_PENULT_PREP, PUNISH_PENULT_PREP = 1, 0.7 # Ensure the movement to the penultimate note isn't from too far away (not greater than a third).
-
-PUNISH_PRLL_FIFTHS_OCTS = 0.5 # Punish parallel fifths or octaves.
-
-PUNISH_REPEATS = 0.1 # Punishment for too many repeated notes.
-
-PUNISH_THIRDS = 0.1 # Punishment for too many parallel thirds
-
-PUNISH_SIXTHS = 0.1 # Punishment for too many parallel sixths.
-
-PUNISH_PARALLEL = 0.1 # Punishment for too many parallel/similar movements.
-
-PUNISH_LEAPS = 0.1 # Punishment for too many large leaps in the melody.
-
-REWARD_SUSPENSION = 1.0 # Reward for a valid suspension.
 
 REWARD_STEPWISE_MOTION, PUNISH_STEPWISE_MOTION = 0.5, 0.1 # Reward / punish correct stepwise movement around dissonances.
 
@@ -134,41 +109,41 @@ def is_suspension(melody, pos, cantus_firmus):
 # Ensure the melody starts appropriately, i.e. at a 5th/octave
 def reward_start(interval):
     if interval == 7 or interval == 4:
-        return REWARD_FIRST
+        return 1.0
     else:
-        return -PUNISH_FIRST
+        return -0.1
 
 # Ensure the melody ends appropriately, i.e. at an octave
 def reward_end(interval):
     if interval == 7:
-        return REWARD_LAST
+        return 1.0
     else:
-        return -PUNISH_LAST
+        return -0.1
 
 # Ensure the penultimate note is step wise onto the final note
 def reward_penultimate(interval):
     if interval == 1:
-        return REWARD_LAST_STEP
+        return 1.0
     else:
-        return -PUNISH_LAST_STEP
+        return -0.7
 
 # Reward contrary motion onto the final note
 def reward_last_motion(interval1, interval2):
     if ((interval1 < 0 and interval2 > 0) or (interval1 > 0 and interval2 < 0)):
-        return REWARD_LAST_MOTION
+        return 1.0
     else:
-        return -PUNISH_LAST_MOTION    
+        return -0.1   
 
 # Ensure the penultimate note isn't a repeated note
 def reward_penultimate_preparation(interval):
     if interval == 0:
-        return -PUNISH_REPEATED_PENULTIMATE
+        return -0.1
     else:
         # Movement to the penultimate note shouldn't be from too far away (not greater than a third).
         if interval < 2:
-            return REWARD_PENULT_PREP
+            return 1.0
         else:
-            return -PUNISH_PENULT_PREP
+            return -0.7
 
 # Ensure dissonances are part of a step-wise movement
 def reward_stepwise_dissonances(i, interval, contrapunctus):
@@ -184,9 +159,9 @@ def reward_stepwise_dissonances(i, interval, contrapunctus):
         else:
             return 0.0
 
-def punish_excess(quantity, limit, punishment):
+def punish_excess(quantity, limit):
     if quantity > limit:
-        return -punishment
+        return -0.1
     else:
         return 0.0
 
@@ -250,7 +225,7 @@ def make_evaluator(cantus_firmus):
                 jump_contour += contour_leap - 2
 
             if ((current_interval == 4 or current_interval == 7) and (last_interval == 4 or last_interval == 7)): # Punish parallel fifths or octaves.
-                fitness_score -= PUNISH_PRLL_FIFTHS_OCTS
+                fitness_score -= 0.5
 
             if contrapunctus_note == last_notes[0]: # Check if the melody is a repeating note.
                 repeats += 1
@@ -265,7 +240,7 @@ def make_evaluator(cantus_firmus):
 
             # Check for a suspension.
             if is_suspension(contrapunctus, i, cantus_firmus):
-                fitness_score += REWARD_SUSPENSION
+                fitness_score += 1.0
 
 
             last_notes = current_notes
@@ -273,18 +248,18 @@ def make_evaluator(cantus_firmus):
 
         # SPECIES ONE PUNISHMENTS
 
-        fitness_score += punish_excess(thirds, repeat_threshold, PUNISH_THIRDS) # Punish too many (> 1/3) parallel thirds
+        fitness_score += punish_excess(thirds, repeat_threshold) # Punish too many (> 1/3) parallel thirds
 
-        fitness_score += punish_excess(sixths, repeat_threshold, PUNISH_SIXTHS) # Punish too many (> 1/3) parallel sixths.
+        fitness_score += punish_excess(sixths, repeat_threshold) # Punish too many (> 1/3) parallel sixths.
 
-        fitness_score += punish_excess(parallel_motion, repeat_threshold, PUNISH_PARALLEL) # Punish too many (> 1/3) parallel movements.
+        fitness_score += punish_excess(parallel_motion, repeat_threshold) # Punish too many (> 1/3) parallel movements.
 
-        fitness_score += punish_excess(jump_contour, jump_threshold, PUNISH_LEAPS) # Punish too many large leaps in the melody.
+        fitness_score += punish_excess(jump_contour, jump_threshold) # Punish too many large leaps in the melody.
 
         # SPECIES FOUR PUNISHMENTS
 
         # Punish too many (> 1/3) repeated notes.
-        fitness_score += punish_excess(repeats, repeat_threshold, PUNISH_REPEATS)
+        fitness_score += punish_excess(repeats, repeat_threshold)
 
         genome.fitness = fitness_score
 
@@ -304,7 +279,7 @@ def make_halter(cantus_firmus):
             if is_suspension(fittest, i, cantus_firmus):
                 suspensions += 1
 
-        max_reward = REWARD_FIRST + REWARD_LAST + REWARD_LAST_STEP + REWARD_LAST_MOTION + REWARD_PENULT_PREP
+        max_reward = 5.0
         return (population[0].fitness >= max_reward + suspensions or
             generation_count > DEFAULT_MAX_GENERATION)
 
