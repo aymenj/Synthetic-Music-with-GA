@@ -1,39 +1,19 @@
-#!/usr/bin/env python
-"""
-A simple command line wrapper around the genetic algorithm used for finding
-valid solutions to species counterpoint problems.
-"""
-
-import argparse
 import logging
-
 import gen_alg
-
 import lilypond
-import melody
+from melody import *
 
 import matplotlib.pyplot as plt
 
-parser = argparse.ArgumentParser(description='Evolves valid solutions to species counterpoint problems.')
-
-parser.add_argument('-cf', '--cantus-firmus', help='specify the cantus firmus', nargs='*', required=True)
-
-
 if __name__ == '__main__':
-    args = parser.parse_args()
-    cf = [int(x) for x in args.cantus_firmus]
+    # cantus_firmus
+    cf = [5, 7, 6, 5, 8, 7, 9, 8, 7, 6, 5]
 
     population_size = 1000
-    mutation_range = 9 # or 7!
-    mutation_rate = 0.4
     
-    start_population = melody.create_population(population_size, cf)
+    start_population = create_population(population_size)
 
-    evaluator = melody.make_evaluator(cf)
-    generator = melody.make_generator(mutation_range, mutation_rate, cf)
-    halter = melody.make_halter(cf)
-
-    ga = gen_alg.genetic_algorithm(start_population, evaluator, generator, halter)
+    ga = gen_alg.genetic_algorithm(start_population, fitness_function, spawn_function, halt_function)
     
     fitness = 0.0
     fitnesses = []
@@ -44,7 +24,7 @@ if __name__ == '__main__':
         fitness = generation[0].fitness
         fitnesses.append(fitness)
         print "--- Generation %d ---" % counter
-        print generation[0]
+        print generation[0].notes
         print fitness
 
     plt.plot(fitnesses)
@@ -53,4 +33,4 @@ if __name__ == '__main__':
     plt.savefig('output/fitness_test.png')
     
     with open('output/test.ly', 'w') as output:
-        output.write(lilypond.render(cf, generation[0].chromosome))
+        output.write(lilypond.render(cf, generation[0].notes))
