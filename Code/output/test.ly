@@ -12,7 +12,7 @@ result = {
         \time 4/4
         \clef treble
         {
-            r2 d''~ d'' c''~ c'' g''~ g'' f''~ f'' e''~ e'' d''~ d'' c''~ c'' b'~ b' d''~ d'' cis'' d'' 1
+            r2 d''~ d'' d''~ d'' g''~ g'' f''~ f'' e''~ e'' d''~ d'' c''~ c'' b'~ b' c''~ c'' cis'' d'' 1
         }
     }
     \new Staff

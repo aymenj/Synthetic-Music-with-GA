@@ -368,9 +368,7 @@ class Melody(object):
 
 
 if __name__ == '__main__':
-    # cantus_firmus
-    cf = [5, 7, 6, 5, 8, 7, 9, 8, 7, 6, 5]
-
+    
     population_size = 1000
     
     start_population = create_population(population_size)
@@ -395,4 +393,4 @@ if __name__ == '__main__':
     plt.savefig('output/fitness_test.png')
     
     with open('output/test.ly', 'w') as output:
-        output.write(lilypond.render(cf, generation[0].notes))
+        output.write(lilypond.render(cantus_firmus, generation[0].notes))
