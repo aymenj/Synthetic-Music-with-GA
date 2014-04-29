@@ -1,5 +1,4 @@
 import logging
-import gen_alg
 import lilypond
 from melody import *
 
@@ -13,7 +12,7 @@ if __name__ == '__main__':
     
     start_population = create_population(population_size)
 
-    ga = gen_alg.genetic_algorithm(start_population, fitness_function, spawn_function, halt_function)
+    ga = genetic_algorithm(start_population, fitness_function, spawn_function, halt_function)
     
     fitness = 0.0
     fitnesses = []
