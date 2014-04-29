@@ -1,5 +1,5 @@
 import random
-import ga
+import gen_alg
 
 # Some defaults.
 DEFAULT_POPULATION_SIZE, DEFAULT_MAX_GENERATION = 1000, 100
@@ -106,7 +106,7 @@ def make_generator(mutation_range, mutation_rate, cantus_firmus):
         # Breed the remaining 50% using roulette wheel selection
         offspring = []
         while len(offspring) < len(seed_gen)/2:
-            mother, father = ga.roulette_wheel(seed_gen), ga.roulette_wheel(seed_gen)
+            mother, father = gen_alg.roulette_wheel(seed_gen), gen_alg.roulette_wheel(seed_gen)
             children = mother.breed(father)
             offspring.extend(children)
 
@@ -314,7 +314,7 @@ def make_halter(cantus_firmus):
 
 
 # Represent a candidate solution for counterpoint
-class Genome(ga.Genome):
+class Genome(gen_alg.Genome):
 
     # Mutates the genotypes no more than the mutation_range depending on the mutation_rate given and the cantus_firmus passed in
     # as the context (to ensure the mutation is valid).

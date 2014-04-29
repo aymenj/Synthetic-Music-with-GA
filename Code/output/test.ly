@@ -3,8 +3,6 @@
 
 \header {
     title = "AM207 Melody"
-    subtitle = "Created on: Tue Apr 29 15:52:30 2014"
-    composer = "Aymen Jaffry and Nikhil Sud"
 }
 
 result = {
@@ -14,7 +12,7 @@ result = {
         \time 4/4
         \clef treble
         {
-            r2 a'~ a' a''~ a'' e''~ e'' f''~ f'' e''~ e'' d''~ d'' c''~ c'' b'~ b' d''~ d'' e'' d'' 1
+            r2 a'~ a' d''~ d'' c''~ c'' f''~ f'' e''~ e'' d''~ d'' c''~ c'' b'~ b' d''~ d'' e'' d'' 1
         }
     }
     \new Staff
@@ -26,14 +24,6 @@ result = {
         }
     }
     >>
-}
-
-\paper {
-    raggedbottom = ##t
-    indent = 7. \mm
-    linewidth = 183.5 \mm
-    betweensystemspace = 25\mm
-    betweensystempadding = 0\mm
 }
 
 \score{

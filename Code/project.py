@@ -7,7 +7,7 @@ valid solutions to species counterpoint problems.
 import argparse
 import logging
 
-import ga
+import gen_alg
 
 import lilypond
 import melody
@@ -43,7 +43,7 @@ if __name__ == '__main__':
     generator = melody.make_generator(mutation_range, mutation_rate, cf)
     halter = melody.make_halter(cf)
 
-    ga = ga.genetic_algorithm(start_population, evaluator, generator, halter)
+    ga = gen_alg.genetic_algorithm(start_population, evaluator, generator, halter)
     
     fitness = 0.0
     fitnesses = []
@@ -63,4 +63,4 @@ if __name__ == '__main__':
     plt.savefig('output/fitness_%s.png' % output)
     
     with open('output/%s.ly' % output, 'w') as output:
-        output.write(lilypond.render(4, cf, generation[0].chromosome))
+        output.write(lilypond.render(cf, generation[0].chromosome))
