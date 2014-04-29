@@ -11,11 +11,6 @@ VALID_ODD_BEAT_INTERVALS, VALID_EVEN_BEAT_INTERVALS = CONSONANCES, CONSONANCES +
 VALID_FIRST_BEAT_INTERVALS, VALID_THIRD_BEAT_INTERVALS = CONSONANCES, CONSONANCES + DISSONANCES
 
 
-# Various rewards and punishments used with different aspects of the solution.
-
-REWARD_STEPWISE_MOTION, PUNISH_STEPWISE_MOTION = 0.5, 0.1 # Reward / punish correct stepwise movement around dissonances.
-
-
 # Create a new list of random candidate solutions of the specified number given the context of the cantus_firmus.
 def create_population(number, cantus_firmus):
     
@@ -147,12 +142,12 @@ def reward_stepwise_dissonances(i, interval, contrapunctus):
     if i % 2 and interval in [3, 6, 8, 10]:
         # The current_note is a dissonance on the third beat of a bar. Check that both the adjacent notes are only a step away.
         if is_stepwise(contrapunctus, i):
-            return REWARD_STEPWISE_MOTION
+            return 0.5
         else:
-            return -PUNISH_STEPWISE_MOTION
+            return -0.1
     else:
         if is_stepwise(contrapunctus, i):
-            return REWARD_STEPWISE_MOTION
+            return 0.5
         else:
             return 0.0
 
