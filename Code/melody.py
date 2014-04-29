@@ -2,80 +2,53 @@ import random
 import ga
 
 # Some defaults.
-DEFAULT_POPULATION_SIZE = 1000
-DEFAULT_MAX_GENERATION = 100
-DEFAULT_MUTATION_RANGE = 9 
-DEFAULT_MUTATION_RATE = 0.4
+DEFAULT_POPULATION_SIZE, DEFAULT_MAX_GENERATION = 1000, 100
 
-# Intervals between notes that are allowed in fourth sepcies counterpoint.
-VALID_INTERVALS = [2, 4, 5, 7, 9, 11]
+DEFAULT_MUTATION_RANGE, DEFAULT_MUTATION_RATE = 9, 0.4
 
-# Intervals between notes that are allowed in third species counterpoint.
-CONSONANCES = [2, 4, 5, 7, 9, 11]
-DISSONANCES = [3, 6, 8, 10]
-VALID_ODD_BEAT_INTERVALS = CONSONANCES
-VALID_EVEN_BEAT_INTERVALS = CONSONANCES + DISSONANCES
 
-VALID_FIRST_BEAT_INTERVALS = CONSONANCES
-VALID_THIRD_BEAT_INTERVALS = CONSONANCES + DISSONANCES
+VALID_INTERVALS = [2, 4, 5, 7, 9, 11] # Intervals between notes that are allowed (fourth sepcies counterpoint)
+
+CONSONANCES, DISSONANCES = [2, 4, 5, 7, 9, 11], [3, 6, 8, 10] # Intervals between notes that are allowed (third species counterpoint)
+
+VALID_ODD_BEAT_INTERVALS, VALID_EVEN_BEAT_INTERVALS = CONSONANCES, CONSONANCES + DISSONANCES
+
+VALID_FIRST_BEAT_INTERVALS, VALID_THIRD_BEAT_INTERVALS = CONSONANCES, CONSONANCES + DISSONANCES
+
 
 # Various rewards and punishments used with different aspects of the solution.
+REWARD_FIRST, PUNISH_FIRST = 1, 0.1 # Reward / punishment to ensure the solution starts correctly (5th or 8ve).
 
-# Reward / punishment to ensure the solution starts correctly (5th or 8ve).
-REWARD_FIRST = 1
-PUNISH_FIRST = 0.1
+REWARD_LAST, PUNISH_LAST = 1, 0.1 # Reward / punishment to ensure the solution finishes correctly (at an 8ve).
 
-# Reward / punishment to ensure the solution finishes correctly (at an 8ve).
-REWARD_LAST = 1
-PUNISH_LAST = 0.1
+REWARD_LAST_STEP, PUNISH_LAST_STEP = 1, 0.7 # Reward / punishment to ensure the penultimate note is step wise onto the final note.
 
-# Reward / punishment to ensure the penultimate note is step wise onto the
-# final note.
-REWARD_LAST_STEP = 1
-PUNISH_LAST_STEP = 0.7
+REWARD_LAST_MOTION, PUNISH_LAST_MOTION = 1, 0.1 # Reward / punish contrary motion onto the final note.
 
-# Reward / punish contrary motion onto the final note.
-REWARD_LAST_MOTION = 1
-PUNISH_LAST_MOTION = 0.1
+PUNISH_REPEATED_PENULTIMATE = 0.1 # Punishment if the penultimate note is a repeated note.
 
-# Punishment if the penultimate note is a repeated note.
-PUNISH_REPEATED_PENULTIMATE = 0.1
+REWARD_PENULT_PREP, PUNISH_PENULT_PREP = 1, 0.7 # Ensure the movement to the penultimate note isn't from too far away (not greater than a third).
 
-# Make sure the movement to the penultimate note isn't from too
-# far away (not greater than a third).
-REWARD_PENULTIMATE_PREPARATION = 1
-PUNISH_PENULTIMATE_PREPARATION = 0.7
+PUNISH_PRLL_FIFTHS_OCTS = 0.5 # Punish parallel fifths or octaves.
 
-# Punish parallel fifths or octaves.
-PUNISH_PARALLEL_FIFTHS_OCTAVES = 0.5
+PUNISH_REPEATS = 0.1 # Punishment for too many repeated notes.
 
-# Punishment for too many repeated notes.
-PUNISH_REPEATS = 0.1
-# Punishment for too many parallel thirds
-PUNISH_THIRDS = 0.1
-# Punishment for too many parallel sixths.
-PUNISH_SIXTHS = 0.1
-# Punishment for too many parallel/similar movements.
-PUNISH_PARALLEL = 0.1
-# Punishment for too many large leaps in the melody.
-PUNISH_LEAPS = 0.1
+PUNISH_THIRDS = 0.1 # Punishment for too many parallel thirds
 
-# Reward for a valid suspension.
-REWARD_SUSPENSION = 1.0
+PUNISH_SIXTHS = 0.1 # Punishment for too many parallel sixths.
 
-# Reward / punish correct stepwise movement around dissonances.
-REWARD_STEPWISE_MOTION = 0.5
-PUNISH_STEPWISE_MOTION = 0.1
+PUNISH_PARALLEL = 0.1 # Punishment for too many parallel/similar movements.
 
-# The highest score a candidate solution may achieve. (Hack!)
-MAX_REWARD = (REWARD_FIRST + REWARD_LAST + REWARD_LAST_STEP + REWARD_LAST_MOTION + REWARD_PENULTIMATE_PREPARATION)
+PUNISH_LEAPS = 0.1 # Punishment for too many large leaps in the melody.
+
+REWARD_SUSPENSION = 1.0 # Reward for a valid suspension.
+
+REWARD_STEPWISE_MOTION, PUNISH_STEPWISE_MOTION = 0.5, 0.1 # Reward / punish correct stepwise movement around dissonances.
 
 
+# Create a new list of random candidate solutions of the specified number given the context of the cantus_firmus.
 def create_population(number, cantus_firmus):
-    """
-    Will create a new list of random candidate solutions of the specified
-    number given the context of the cantus_firmus.
-    """
+    
     result = []
     for i in range(number):
         new_chromosome = []
@@ -122,41 +95,31 @@ def is_stepwise(melody, pos):
     else:
         return False
 
+# Return a function that takes a seed generation and returns a new population.
+def make_generator(mutation_range, mutation_rate, cantus_firmus):
 
-def make_generate_function(mutation_range, mutation_rate, cantus_firmus):
-    """
-    Given the cantus firmus, mutation range and mutation rate will return a
-    function that takes a seed generation and returns a new population.
-    """
-
-    def generate(seed_generation):
-        """
-        Given a seed generation will return a new generation of candidate
-        solutions assuming the cantus_firmus and other settings in the closure.
-        """
-        length = len(seed_generation)
-        # Keep the fittest 50%
-        new_generation = seed_generation[:length/2]
+    # Return a new generation of candidate solutions assuming the cantus_firmus and other settings in the closure.
+    def generator(seed_gen):
+        
+        new_gen = seed_gen[:len(seed_gen)/2] # Keep the fittest 50%
 
         # Breed the remaining 50% using roulette wheel selection
         offspring = []
-        while len(offspring) < length/2:
-            mum = ga.roulette_wheel_selection(seed_generation)
-            dad = ga.roulette_wheel_selection(seed_generation)
-            children = mum.breed(dad)
+        while len(offspring) < len(seed_gen)/2:
+            mother, father = ga.roulette_wheel(seed_gen), ga.roulette_wheel(seed_gen)
+            children = mother.breed(father)
             offspring.extend(children)
 
         # Mutate
         for genome in offspring:
             genome.mutate(mutation_range, mutation_rate, cantus_firmus)
 
-        # Ensure the new generation is the right length
-        new_generation.extend(offspring)
-        new_generation = new_generation[:length]
+        new_gen.extend(offspring)
+        new_gen = new_gen[:len(seed_gen)] # Ensure the new generation is the right length
 
-        return new_generation
+        return new_gen
 
-    return generate
+    return generator
 
 
 # Is the note at the specified position part of a suspension? (dissonance resolving by step onto a consonance)
@@ -205,9 +168,9 @@ def reward_penultimate_preparation(interval):
     else:
         # Movement to the penultimate note shouldn't be from too far away (not greater than a third).
         if interval < 2:
-            return REWARD_PENULTIMATE_PREPARATION
+            return REWARD_PENULT_PREP
         else:
-            return -PUNISH_PENULTIMATE_PREPARATION
+            return -PUNISH_PENULT_PREP
 
 # Ensure dissonances are part of a step-wise movement
 def reward_stepwise_dissonances(i, interval, contrapunctus):
@@ -229,22 +192,15 @@ def punish_excess(quantity, limit, punishment):
     else:
         return 0.0
 
+# Returns a function that takes a single Genome instance and returns a fitness score.
+def make_evaluator(cantus_firmus):
 
-def make_fitness_function(cantus_firmus):
-    """
-    Given the cantus firmus, will return a function that takes a single Genome
-    instance and returns a fitness score.
-    """
-    # Melody wide measures.
-    repeat_threshold = len(cantus_firmus) * 0.5
-    jump_threshold = len(cantus_firmus) * 0.3
-
-    def fitness_function(genome):
-        """
-        Given a candidate solution will return its fitness score assuming
-        the cantus_firmus in this closure. Caches the fitness score in the
-        genome.
-        """
+    # Melody-wide measures.
+    repeat_threshold, jump_threshold = len(cantus_firmus) * 0.5, len(cantus_firmus) * 0.3
+    
+    # Return the fitness score assuming the cantus_firmus in this closure. Caches the fitness score in the genome.
+    def evaluator(genome):
+        
         # Save some time!
         if genome.fitness is not None:
             return genome.fitness
@@ -296,7 +252,7 @@ def make_fitness_function(cantus_firmus):
                 jump_contour += contour_leap - 2
 
             if ((current_interval == 4 or current_interval == 7) and (last_interval == 4 or last_interval == 7)): # Punish parallel fifths or octaves.
-                fitness_score -= PUNISH_PARALLEL_FIFTHS_OCTAVES
+                fitness_score -= PUNISH_PRLL_FIFTHS_OCTS
 
             if contrapunctus_note == last_notes[0]: # Check if the melody is a repeating note.
                 repeats += 1
@@ -336,45 +292,34 @@ def make_fitness_function(cantus_firmus):
 
         return fitness_score
 
-    return fitness_function
+    return evaluator
 
+# Return a halt function 
+def make_halter(cantus_firmus):
 
-def make_halt_function(cantus_firmus):
-    """
-    Returns a halt function for the given cantus firmus.
-    """
-
-    def halt(population, generation_count):
-        """
-        Given a population of candidate solutions and generation count (the
-        number of epochs the algorithm has run) will return a boolean to
-        indicate if an acceptable solution has been found within the referenced
-        population.
-        """
+    # Given a population of candidate solutions and generation count, indicates if an acceptable solution has been found
+    def halter(population, generation_count):    
         fittest = population[0].chromosome
         suspensions = 0
+
         for i in range(1, len(fittest) - 2):
-            # Check for a suspension.
             if is_suspension(fittest, i, cantus_firmus):
                 suspensions += 1
-        return (population[0].fitness >= MAX_REWARD + suspensions or
+
+        max_reward = REWARD_FIRST + REWARD_LAST + REWARD_LAST_STEP + REWARD_LAST_MOTION + REWARD_PENULT_PREP
+        return (population[0].fitness >= max_reward + suspensions or
             generation_count > DEFAULT_MAX_GENERATION)
 
-    return halt
+    return halter
 
 
-
+# Represent a candidate solution for counterpoint
 class Genome(ga.Genome):
-    """
-    A class to represent a candidate solution for fourth species counterpoint.
-    """
 
+    # Mutates the genotypes no more than the mutation_range depending on the mutation_rate given and the cantus_firmus passed in
+    # as the context (to ensure the mutation is valid).
     def mutate(self, mutation_range, mutation_rate, context):
-        """
-        Mutates the genotypes no more than the mutation_range depending on the
-        mutation_rate given and the cantus_firmus passed in as the context (to
-        ensure the mutation is valid).
-        """
+        
         # SECOND SPECIES
         first_beat_mutation_intervals = [interval for interval in VALID_FIRST_BEAT_INTERVALS if interval <= mutation_range]
         third_beat_mutation_intervals = [interval for interval in VALID_THIRD_BEAT_INTERVALS if interval <= mutation_range]

@@ -36,12 +36,14 @@ if __name__ == '__main__':
     population_size = melody.DEFAULT_POPULATION_SIZE
     mutation_range = melody.DEFAULT_MUTATION_RANGE
     mutation_rate = melody.DEFAULT_MUTATION_RATE
+    
     start_population = melody.create_population(population_size, cf)
-    fitness_function = melody.make_fitness_function(cf)
-    generate_function = melody.make_generate_function(mutation_range, mutation_rate, cf)
-    halt_function = melody.make_halt_function(cf)
 
-    ga = ga.genetic_algorithm(start_population, fitness_function, generate_function, halt_function)
+    evaluator = melody.make_evaluator(cf)
+    generator = melody.make_generator(mutation_range, mutation_rate, cf)
+    halter = melody.make_halter(cf)
+
+    ga = ga.genetic_algorithm(start_population, evaluator, generator, halter)
     
     fitness = 0.0
     fitnesses = []
