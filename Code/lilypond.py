@@ -55,21 +55,21 @@ def normalize(notes):
 def get_cantus_firmus(notes):
 
     normalized = normalize(notes)
-    if not normalized:
+    if len(normalized) == 0:
         return ''
 
     result = NOTES[normalized[0]] + ' 1 ' # Set the duration against the first note.
     result += ' '.join([NOTES[n] for n in normalized[1:]]) # Translate all the others.
     result += ' \\bar "|."' # End with a double bar.
-    result = result.replace('  ', ' ') # Tidy up double spaces.
-    return result
+    
+    return result.replace('  ', ' ') # Clear excess spaces
 
 
 # Given a representation of the contrapunctus in numeric form, turns it into correct Lilypond notation.
 def get_contrapunctus(notes):    
 
     normalized = normalize(notes)
-    if not normalized:
+    if len(normalized) == 0:
         return ''
 
     result = 'r2 ' # Start with two beats rest.
@@ -88,8 +88,9 @@ def get_contrapunctus(notes):
     
     result += ' ' + next
     result += ' %s 1' % (NOTES[final]) # Ensure the final note is a semibreve
-    result = result.replace('  ', ' ') # Tidy up double spaces
-    return result
+    
+    return result.replace('  ', ' ') # Clear excess spaces
+
 
 # Returns a string containing lilypond code to render the musical information as PDF/MIDI
 def render(cantus_firmus, contrapunctus):

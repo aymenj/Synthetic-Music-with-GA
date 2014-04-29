@@ -2,9 +2,7 @@ import random
 import gen_alg
 
 # Some defaults.
-DEFAULT_POPULATION_SIZE, DEFAULT_MAX_GENERATION = 1000, 100
-
-DEFAULT_MUTATION_RANGE, DEFAULT_MUTATION_RATE = 9, 0.4
+DEFAULT_MAX_GENERATION = 100
 
 
 VALID_INTERVALS = [2, 4, 5, 7, 9, 11] # Intervals between notes that are allowed (fourth sepcies counterpoint)

@@ -18,24 +18,14 @@ parser = argparse.ArgumentParser(description='Evolves valid solutions to species
 
 parser.add_argument('-cf', '--cantus-firmus', help='specify the cantus firmus', nargs='*', required=True)
 
-parser.add_argument('-o', '--out', help='name the output file')
-
 
 if __name__ == '__main__':
     args = parser.parse_args()
     cf = [int(x) for x in args.cantus_firmus]
-    #species = args.species
-    output = 'out'
-    if args.out:
-        output = args.out
 
     population_size = 1000
-    mutation_range = 7
+    mutation_range = 9 # or 7!
     mutation_rate = 0.4
-
-    population_size = melody.DEFAULT_POPULATION_SIZE
-    mutation_range = melody.DEFAULT_MUTATION_RANGE
-    mutation_rate = melody.DEFAULT_MUTATION_RATE
     
     start_population = melody.create_population(population_size, cf)
 
@@ -60,7 +50,7 @@ if __name__ == '__main__':
     plt.plot(fitnesses)
     plt.ylabel('Generation')
     plt.xlabel('Fitness Score')
-    plt.savefig('output/fitness_%s.png' % output)
+    plt.savefig('output/fitness_test.png')
     
-    with open('output/%s.ly' % output, 'w') as output:
+    with open('output/test.ly', 'w') as output:
         output.write(lilypond.render(cf, generation[0].chromosome))

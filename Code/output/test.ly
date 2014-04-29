@@ -12,7 +12,7 @@ result = {
         \time 4/4
         \clef treble
         {
-            r2 a'~ a' d''~ d'' c''~ c'' f''~ f'' e''~ e'' d''~ d'' c''~ c'' b'~ b' d''~ d'' e'' d'' 1
+            r2 a'~ a' d''~ d'' c''~ c'' f''~ f'' e''~ e'' d''~ d'' c''~ c'' b'~ b' a'~ a' b' d'' 1
         }
     }
     \new Staff
@@ -31,7 +31,7 @@ result = {
     \midi {
         \context {
             \Score
-            tempoWholesPerMinute = #(ly:make-moment 160 4)
+            tempoWholesPerMinute = #(ly:make-moment 160 2)
         }
     }
     \layout {}

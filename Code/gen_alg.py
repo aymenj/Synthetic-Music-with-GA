@@ -68,10 +68,9 @@ class Genome(object):
         return crossover(self, other, self.__class__)
 
     
-    # Mutates the genotypes no more than the mutation_range depending on the mutation_rate given a certain context (to ensure 
-    # the mutation is valid). To be overridden as per requirements in the child classes.
+    # Mutates the genotypes given a certain context (to ensure mutation is valid) depending on mutation_range, mutation_rate 
     def mutate(self, mutation_range, mutation_rate, context):
-        return NotImplemented
+        return NotImplemented # To be overridden
 
     # Genomes with the same genotype are equal
     def __eq__(self, other):
