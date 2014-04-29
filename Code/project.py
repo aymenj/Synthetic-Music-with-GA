@@ -56,6 +56,8 @@ if __name__ == '__main__':
         print fitness
 
     plt.plot(fitnesses)
+    plt.ylabel('Generation')
+    plt.xlabel('Fitness Score')
     plt.savefig('output/fitness_%s.png' % output)
     
     with open('output/%s.ly' % output, 'w') as output:

@@ -1,13 +1,7 @@
-"""
-This module encapsulates the behaviour of fourth species counterpoint.
-"""
 import random
-
 import ga
-from utils import is_parallel, make_generate_function, is_suspension, is_stepwise_motion
 
-
-# Some sane defaults.
+# Some defaults.
 DEFAULT_POPULATION_SIZE = 1000
 DEFAULT_MAX_GENERATION = 100
 DEFAULT_MUTATION_RANGE = 9 
@@ -113,6 +107,67 @@ def create_population(number, cantus_firmus):
         result.append(genome)
     return result'''
 
+# Is the motion between last and current notes parallel
+def is_parallel(last, current):
+    if ((last[0] - current[0] < 0) and (last[1] - current[1] < 0)) or ((last[0] - current[0] > 0) and (last[1] - current[1] > 0)):
+        return True
+    else:
+        return False
+
+
+# Is the note at pos in the middle of a step-wise movement in a single direction?
+def is_stepwise(melody, pos):
+    if abs(melody[pos-1] - melody[pos]) == 1 and abs(melody[pos] - melody[pos+1]) == 1:
+        return melody[pos-1] != melody[pos+1]
+    else:
+        return False
+
+
+def make_generate_function(mutation_range, mutation_rate, cantus_firmus):
+    """
+    Given the cantus firmus, mutation range and mutation rate will return a
+    function that takes a seed generation and returns a new population.
+    """
+
+    def generate(seed_generation):
+        """
+        Given a seed generation will return a new generation of candidate
+        solutions assuming the cantus_firmus and other settings in the closure.
+        """
+        length = len(seed_generation)
+        # Keep the fittest 50%
+        new_generation = seed_generation[:length/2]
+
+        # Breed the remaining 50% using roulette wheel selection
+        offspring = []
+        while len(offspring) < length/2:
+            mum = ga.roulette_wheel_selection(seed_generation)
+            dad = ga.roulette_wheel_selection(seed_generation)
+            children = mum.breed(dad)
+            offspring.extend(children)
+
+        # Mutate
+        for genome in offspring:
+            genome.mutate(mutation_range, mutation_rate, cantus_firmus)
+
+        # Ensure the new generation is the right length
+        new_generation.extend(offspring)
+        new_generation = new_generation[:length]
+
+        return new_generation
+
+    return generate
+
+
+# Is the note at the specified position part of a suspension? (dissonance resolving by step onto a consonance)
+def is_suspension(melody, pos, cantus_firmus):    
+    if (melody[pos] - cantus_firmus[pos + 1] == 3) and (melody[pos + 1] - cantus_firmus[pos + 1] == 2):
+        return True
+    elif (melody[pos] - cantus_firmus[pos + 1] == 6) and (melody[pos + 1] - cantus_firmus[pos + 1] == 5):
+        return True
+    else:
+        return False
+
 # rules below from http://www.donaldsonworkshop.com/coriakin/melody.html
 
 # Ensure the melody starts appropriately, i.e. at a 5th/octave
@@ -158,12 +213,12 @@ def reward_penultimate_preparation(interval):
 def reward_stepwise_dissonances(i, interval, contrapunctus):
     if i % 2 and interval in [3, 6, 8, 10]:
         # The current_note is a dissonance on the third beat of a bar. Check that both the adjacent notes are only a step away.
-        if is_stepwise_motion(contrapunctus, i):
+        if is_stepwise(contrapunctus, i):
             return REWARD_STEPWISE_MOTION
         else:
             return -PUNISH_STEPWISE_MOTION
     else:
-        if is_stepwise_motion(contrapunctus, i):
+        if is_stepwise(contrapunctus, i):
             return REWARD_STEPWISE_MOTION
         else:
             return 0.0

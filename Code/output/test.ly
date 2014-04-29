@@ -3,7 +3,7 @@
 
 \header {
     title = "AM207 Melody"
-    subtitle = "Created on: Mon Apr 28 18:14:14 2014"
+    subtitle = "Created on: Tue Apr 29 14:40:38 2014"
     composer = "Aymen Jaffry and Nikhil Sud"
 }
 
@@ -14,7 +14,7 @@ result = {
         \time 4/4
         \clef treble
         {
-            r2 a'~ a' d''~ d'' c''~ c'' f''~ f'' e''~ e'' d''~ d'' c''~ c'' b'~ b' d''~ d'' cis'' d'' 1
+            r2 a'~ a' a''~ a'' g''~ g'' f''~ f'' e''~ e'' d''~ d'' c''~ c'' b'~ b' a'~ a' g' d'' 1
         }
     }
     \new Staff

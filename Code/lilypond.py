@@ -16,6 +16,11 @@ SPECIES_DURATION = {
     3: 4,
 }
 
+# A dictionary that maps numbers to lilypond notes.
+NOTES = {
+    1: "g", 2: "a", 3: "b", 4: "c'", 5: "d'", 6: "e'", 7: "f'", 8: "g'", 9: "a'", 10: "b'", 11: "c''", 12: "d''", 13: "e''", 14: "f''", 15: "g''", 16: "a''", 17: "r"
+}
+
 TEMPLATE = """
 \\version "2.12.2"
 
@@ -65,27 +70,6 @@ result = {
     \layout {}
 }
 """
-
-# A dictionary that maps numbers to lilypond notes.
-NOTES = {
-    1: "g",
-    2: "a",
-    3: "b",
-    4: "c'",
-    5: "d'",
-    6: "e'",
-    7: "f'",
-    8: "g'",
-    9: "a'",
-    10: "b'",
-    11: "c''",
-    12: "d''",
-    13: "e''",
-    14: "f''",
-    15: "g''",
-    16: "a''",
-    17: "r",
-}
 
 
 def get_cantus_firmus(notes):
